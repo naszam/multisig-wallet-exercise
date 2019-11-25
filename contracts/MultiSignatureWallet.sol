@@ -3,16 +3,19 @@ pragma solidity ^0.5.0;
 contract MultiSignatureWallet {
 
     struct Transaction {
-      bool executed;
       address destination;
       uint value;
       bytes data;
+      bool executed;
     }
     
     address[] public owners;
     uint public required;
     mapping (address => bool) public isOwner;
+    uint public transactionCount;
+    mapping (uint => Transaction) public transactions;
 
+    event Submission(uint indexed transactionId);
     event Deposit(address indexed sender, uint value);
 
     /// @dev Fallback function allows to deposit ether.
@@ -82,5 +85,15 @@ contract MultiSignatureWallet {
     /// @param value Transaction ether value.
     /// @param data Transaction data payload.
     /// @return Returns transaction ID.
-    function addTransaction(address destination, uint value, bytes memory data) internal returns (uint transactionId) {}
+    function addTransaction(address destination, uint value, bytes memory data) internal returns (uint transactionId) {
+	transactions[transactionId] = Transaction ({
+		destination: destination,
+		value: value,
+		data: data,
+		executed: false
+        });
+	transactionCount += 1;
+	emit Submission(transactionId);
+
+    }
 }
