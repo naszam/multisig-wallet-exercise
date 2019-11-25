@@ -51,7 +51,11 @@ contract MultiSignatureWallet {
     /// @param value Transaction ether value.
     /// @param data Transaction data payload.
     /// @return Returns transaction ID.
-    function submitTransaction(address destination, uint value, bytes memory data) public returns (uint transactionId) {}
+    function submitTransaction(address destination, uint value, bytes memory data) public returns (uint transactionId) {
+	require(isOwner[msg.sender]);
+	transactionId = addTransaction(destination, value, data);
+	confirmTransaction(transactionId);
+    }
 
     /// @dev Allows an owner to confirm a transaction.
     /// @param transactionId Transaction ID.
